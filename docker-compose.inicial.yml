@@ -1,0 +1,12 @@
+# Instalación desde cero (sin respaldo): carga los datos iniciales la primera vez.
+# Uso:  docker compose -f docker-compose.yml -f docker-compose.inicial.yml up -d
+# Solo actúa si la base de datos está vacía. Para recuperar un sistema usar el respaldo.
+services:
+  db:
+    volumes:
+      - type: bind
+        source: ./codigo/BD/biblioteca2.sql
+        target: /docker-entrypoint-initdb.d/01-biblioteca2.sql
+        read_only: true
+        bind:
+          create_host_path: false

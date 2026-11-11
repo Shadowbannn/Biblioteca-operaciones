@@ -1,0 +1,21 @@
+$ ./scripts/restaurar_docker.sh --probar
+PRUEBA de restauración de respaldo-docker_2026-11-10_23-16-33.tar.gz en un entorno aislado ('bibliotech_prueba', puerto 8081, claves nuevas)
+Restaurando la base de datos biblioteca2...
+Restaurando fotos y portadas...
+Restaurando el registro de movimientos...
+
+Verificación (respaldo vs. restaurado):
+  tabla libros               respaldo=10222    restaurado=10222    [OK]
+  tabla socios               respaldo=5        restaurado=5        [OK]
+  tabla usuarios             respaldo=5        restaurado=5        [OK]
+  tabla prestamos            respaldo=12       restaurado=12       [OK]
+  tabla juegos               respaldo=82       restaurado=82       [OK]
+  tabla proyectos            respaldo=159      restaurado=159      [OK]
+  archivos de uploads        respaldo=558      restaurado=558      [OK]
+  líneas de movimientos     respaldo=2        restaurado=2        [OK]
+  web: inicioo.php (HTTP)    respaldo=200      restaurado=200      [OK]
+  web: catálogo (lee la BD) respaldo=HTTP 200 ok restaurado=HTTP 200 ok [OK]
+
+ÉXITO: restauración verificada (--probar, respaldo-docker_2026-11-10_23-16-33.tar.gz, 17 s)
+Entorno de prueba 'bibliotech_prueba' eliminado (contenedores y volúmenes)
+[código de salida: 0]

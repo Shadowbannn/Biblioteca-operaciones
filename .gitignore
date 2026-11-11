@@ -1,0 +1,6 @@
+codigo/
+.env
+.respaldo.cnf
+respaldos/
+logs/
+datos/

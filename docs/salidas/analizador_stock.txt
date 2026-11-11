@@ -1,0 +1,26 @@
+--- MODO STOCK Y REPOSICIÓN (alerta si quedan 1 o menos disponibles) ---
+Libro: L01145 | Título: ¿Qué es el hombre? | Disponibles: 0 de 1
+  -> ¡ALERTA! Sin ejemplares disponibles. Necesita reposición.
+Libro: L02312 | Título: Vidas Paralelas | Disponibles: 0 de 1
+  -> ¡ALERTA! Sin ejemplares disponibles. Necesita reposición.
+Libro: L09785 | Título: ¿Y si quedamos como amigos? | Disponibles: 0 de 1
+  -> ¡ALERTA! Sin ejemplares disponibles. Necesita reposición.
+Libro: L09809 | Título: ¿Quién corre conmigo? | Disponibles: 0 de 1
+  -> ¡ALERTA! Sin ejemplares disponibles. Necesita reposición.
+Libro: L09995 | Título: Zac y Mia | Disponibles: 0 de 1
+  -> ¡ALERTA! Sin ejemplares disponibles. Necesita reposición.
+Libro: L02779 | Título: ¿Por qué cantan las ballenas? | Disponibles: 1 de 1
+  -> Aviso: queda 1 ejemplar disponible. Considerar reposición.
+Libro: L04216 | Título: Sweet peppers SRL  SEXSHOP | Disponibles: 1 de 1
+  -> Aviso: queda 1 ejemplar disponible. Considerar reposición.
+Libro: L10190 | Título: Yo, tú y un quizás | Disponibles: 1 de 1
+  -> Aviso: queda 1 ejemplar disponible. Considerar reposición.
+Libro: L01726 | Título: Wavelength  Pre- intermediate Workbook    e.1 | Disponibles: 1 de 1
+  -> Aviso: queda 1 ejemplar disponible. Considerar reposición.
+Libro: L08522 | Título: ¿Dónde está Wally? El libro mágico | Disponibles: 1 de 1
+  -> Aviso: queda 1 ejemplar disponible. Considerar reposición.
+Libro: L09883 | Título: ¿Quién mató a Alex? El misterio que nos une | Disponibles: 1 de 1
+  -> Aviso: queda 1 ejemplar disponible. Considerar reposición.
+Libro: L09967 | Título: A través de mi ventana | Disponibles: 1 de 1
+  -> Aviso: queda 1 ejemplar disponible. Considerar reposición.
+Libros analizados: 10222 | en alerta: 12

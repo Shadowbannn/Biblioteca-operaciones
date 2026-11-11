@@ -1,0 +1,14 @@
+$ ./scripts/restaurar_docker.sh --produccion respaldos/respaldo-docker_2026-11-10_23-16-33.tar.gz
+
+ATENCIÓN: se van a REEMPLAZAR la base de datos, las fotos y el registro de movimientos
+del sistema en funcionamiento por el contenido de respaldo-docker_2026-11-10_23-16-33.tar.gz
+(respaldo del 2026-11-10 23:16:36).
+Respaldo de seguridad previo a la restauración
+Inicio del respaldo respaldo-docker_2026-11-10_23-18-25.tar.gz
+ÉXITO: Respaldo creado (respaldo-docker_2026-11-10_23-18-25.tar.gz, 42M, sha256 a979058a692f...)
+RESTAURACIÓN EN PRODUCCIÓN de respaldo-docker_2026-11-10_23-16-33.tar.gz
+Restaurando la base de datos biblioteca2...
+Restaurando fotos y portadas...
+service "app" is not running
+ERROR: No se pudieron restaurar las fotos y portadas
+[código de salida: 1]

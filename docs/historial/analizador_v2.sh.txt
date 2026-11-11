@@ -1,0 +1,239 @@
+#!/bin/bash
+# analizador.sh - Analizador de la biblioteca (versión 2)
+#
+# Uso:
+#   analizador.sh                              menú interactivo
+#   analizador.sh MODO [catalogo] [movimientos]
+#
+# MODO:  stock | dormidos | ranking | alertas | resumen
+#   stock      libros con pocos ejemplares disponibles (alerta de reposición)
+#   dormidos   libros del catálogo que nunca se prestaron
+#   ranking    los más prestados
+#   alertas    todo lo anterior en formato alerta, registrado en logs/alertas.log
+#   resumen    totales generales
+# Sin archivos indicados lee datos/catalogo.csv y datos/movimientos.log,
+# que publica exportar_datos.sh (catálogo desde la base de datos y movimientos
+# desde el registro que escribe la aplicación).
+#
+# Variables opcionales:
+#   UMBRAL_STOCK  se alerta si quedan este número de ejemplares o menos (por defecto 1: con 0 o 1 disponible)
+#   LIMITE        cantidad de filas de dormidos y ranking a mostrar o alertar (por defecto 20; 0 = todas)
+
+export LC_ALL=C
+
+DIR_SCRIPT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BASE="$(dirname "$DIR_SCRIPT")"
+CATALOGO_DEF="$BASE/datos/catalogo.csv"
+MOVIMIENTOS_DEF="$BASE/datos/movimientos.log"
+LOG_ALERTA="$BASE/logs/alertas.log"
+LOG_ERRORES="$BASE/logs/errores.log"
+CABECERA="id;titulo;autor;categoria;ejemplares"
+UMBRAL="${UMBRAL_STOCK:-1}"
+LIMITE="${LIMITE:-20}"
+TAB=$'\t'
+TABLA=""
+TMP=""
+
+trap 'rm -f "$TABLA" "$TMP"' EXIT
+
+uso() {
+    sed -n '2,20p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+}
+
+error_fatal() {
+    echo "ERROR: $*" >&2
+    mkdir -p "$BASE/logs"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - ERROR: $*" >> "$LOG_ERRORES"
+    exit 1
+}
+
+[[ "$UMBRAL" =~ ^-?[0-9]+$ ]] || error_fatal "UMBRAL_STOCK debe ser un número entero (recibido: $UMBRAL)"
+[[ "$LIMITE" =~ ^[0-9]+$ ]] || error_fatal "LIMITE debe ser un número entero positivo o 0 (recibido: $LIMITE)"
+
+validar_archivos() {
+    [ -f "$CATALOGO" ] || error_fatal "catálogo $CATALOGO no existe"
+    [ -r "$CATALOGO" ] || error_fatal "no se puede leer el catálogo $CATALOGO"
+    [ -s "$CATALOGO" ] || error_fatal "el catálogo $CATALOGO está vacío"
+    [ "$(head -n 1 "$CATALOGO" | tr -d '\r')" = "$CABECERA" ] || error_fatal "el catálogo $CATALOGO no tiene la cabecera '$CABECERA'"
+    [ -f "$MOVIMIENTOS" ] || error_fatal "movimientos $MOVIMIENTOS no existe"
+    [ -r "$MOVIMIENTOS" ] || error_fatal "no se puede leer $MOVIMIENTOS"
+}
+
+# Lee catálogo y movimientos UNA sola vez y arma una tabla (una fila por libro):
+# id, título, autor, categoría, ejemplares, préstamos, devoluciones, reservas
+# La última línea (#META) trae los totales y los movimientos de libros que no están en el catálogo.
+construir_tabla() {
+    TABLA="$(mktemp)"
+    TMP="$(mktemp)"
+    awk '
+    BEGIN { FS = ";" }
+    NR == FNR {
+        if (FNR == 1) next
+        sub(/\r$/, "")
+        if ($1 == "") next
+        id = $1; titulo[id] = $2; autor[id] = $3; cat[id] = $4; ej[id] = $5 + 0
+        orden[++n] = id
+        next
+    }
+    {
+        split($0, m, " ")
+        l = m[4]; sub(/^libro=/, "", l)
+        if (!(l in ej)) { huerfanos++; next }
+        if (m[3] == "PRESTAMO")        { P[l]++; tP++ }
+        else if (m[3] == "DEVOLUCION") { D[l]++; tD++ }
+        else if (m[3] == "RESERVA")    { R[l]++; tR++ }
+    }
+    END {
+        for (i = 1; i <= n; i++) {
+            id = orden[i]
+            printf "%s\t%s\t%s\t%s\t%d\t%d\t%d\t%d\n", id, titulo[id], autor[id], cat[id], ej[id], P[id] + 0, D[id] + 0, R[id] + 0
+        }
+        printf "#META\t%d\t%d\t%d\t%d\n", tP + 0, tD + 0, tR + 0, huerfanos + 0
+    }' "$CATALOGO" "$MOVIMIENTOS" > "$TABLA" || error_fatal "no se pudieron procesar los archivos"
+}
+
+datos_libros() { grep -v '^#' "$TABLA"; }
+
+# Muestra solo las primeras LIMITE líneas (0 = todas)
+limitar() { if [ "$LIMITE" -gt 0 ]; then head -n "$LIMITE"; else cat; fi; }
+
+nota_limite() {
+    local total="$1"
+    if [ "$LIMITE" -gt 0 ] && [ "$total" -gt "$LIMITE" ]; then
+        echo "  ... y $((total - LIMITE)) más (se muestran $LIMITE; usar LIMITE=0 para verlos todos)"
+    fi
+}
+
+ejecutar_modo() {
+    local modo="$1"
+    validar_archivos
+    construir_tabla
+    local total_libros
+    total_libros="$(datos_libros | wc -l)"
+
+    case "$modo" in
+        stock)
+            echo "--- MODO STOCK Y REPOSICIÓN (alerta si quedan $UMBRAL o menos disponibles) ---"
+            datos_libros | awk -F'\t' -v u="$UMBRAL" '{ d = $5 - ($6 - $7); if (d <= u) printf "%d\t%s\t%s\t%d\n", d, $1, $2, $5 }' \
+                | sort -t"$TAB" -k1,1n -k2,2 > "$TMP"
+            local alertas
+            alertas="$(wc -l < "$TMP")"
+            limitar < "$TMP" | awk -F'\t' '{ printf "Libro: %s | Título: %s | Disponibles: %d de %d\n  -> ¡ALERTA! Quedan %d ejemplares. Necesita reposición.\n", $2, $3, $1, $4, $1 }'
+            nota_limite "$alertas"
+            echo "Libros analizados: $total_libros | en alerta: $alertas"
+            ;;
+
+        dormidos)
+            echo "--- MODO LIBROS DORMIDOS (nunca prestados) ---"
+            datos_libros | awk -F'\t' '$6 == 0 { printf "%s\t%s\t%s\n", $1, $2, $3 }' > "$TMP"
+            local dormidos
+            dormidos="$(wc -l < "$TMP")"
+            limitar < "$TMP" | awk -F'\t' '{ printf "Libro dormido: %s - %s (%s)\n", $1, $2, $3 }'
+            nota_limite "$dormidos"
+            echo "Libros dormidos: $dormidos de $total_libros"
+            ;;
+
+        ranking)
+            if [ "$LIMITE" -gt 0 ]; then
+                echo "--- MODO RANKING TOP $LIMITE MÁS PRESTADOS ---"
+            else
+                echo "--- MODO RANKING COMPLETO DE LIBROS PRESTADOS ---"
+            fi
+            datos_libros | awk -F'\t' '$6 > 0 { printf "%d\t%s\t%s\n", $6, $1, $2 }' \
+                | sort -t"$TAB" -k1,1nr -k2,2 > "$TMP"
+            if [ -s "$TMP" ]; then
+                limitar < "$TMP" | awk -F'\t' '{ printf "  %d préstamos -> Libro: %s (%s)\n", $1, $2, $3 }'
+            else
+                echo "No hay préstamos registrados."
+            fi
+            ;;
+
+        alertas)
+            echo "--- GENERANDO ALERTAS EN alertas.log ---"
+            mkdir -p "$BASE/logs"
+            local fecha nd
+            fecha="$(date '+%Y-%m-%d %H:%M:%S')"
+            nd="$(datos_libros | awk -F'\t' '$6 == 0' | wc -l)"
+            {
+                # 1) Stock bajo: todos los libros con UMBRAL o menos ejemplares disponibles
+                datos_libros | awk -F'\t' -v u="$UMBRAL" -v f="$fecha" \
+                    '{ d = $5 - ($6 - $7); if (d <= u) printf "%s - ALERTA STOCK: Libro %s (%s) stock disponible: %d\n", f, $1, $2, d }'
+                # 2) Dormidos: libros que nunca se prestaron (hasta LIMITE)
+                datos_libros | awk -F'\t' -v f="$fecha" \
+                    '$6 == 0 { printf "%s - ALERTA DORMIDO: Libro %s (%s) nunca se prestó\n", f, $1, $2 }' | limitar
+                if [ "$LIMITE" -gt 0 ] && [ "$nd" -gt "$LIMITE" ]; then
+                    echo "$fecha - INFO DORMIDOS: se listan $LIMITE de $nd libros que nunca se prestaron"
+                fi
+                # 3) Más prestados: candidatos a comprar más ejemplares (hasta LIMITE)
+                datos_libros | awk -F'\t' '$6 > 0 { printf "%d\t%s\t%s\n", $6, $1, $2 }' \
+                    | sort -t"$TAB" -k1,1nr -k2,2 | limitar \
+                    | awk -F'\t' -v f="$fecha" '{ printf "%s - ALERTA RANKING: Libro %s (%s) entre los más prestados: %d préstamos (considerar comprar más ejemplares)\n", f, $2, $3, $1 }'
+            } > "$TMP"
+            cat "$TMP" > "$LOG_ALERTA" && chmod 640 "$LOG_ALERTA"
+            echo "Proceso finalizado (umbral de stock: $UMBRAL). Revisa: $LOG_ALERTA"
+            echo "  Stock: $(grep -c 'ALERTA STOCK' "$TMP") | Dormidos: $(grep -c 'ALERTA DORMIDO' "$TMP") (de $nd) | Ranking: $(grep -c 'ALERTA RANKING' "$TMP")"
+            ;;
+
+        resumen)
+            echo "--- RESUMEN GENERAL ---"
+            local tp td tr hu
+            IFS=$'\t' read -r _ tp td tr hu <<< "$(grep '^#META' "$TABLA")"
+            datos_libros | awk -F'\t' -v u="$UMBRAL" -v tp="$tp" -v td="$td" -v tr="$tr" -v hu="$hu" '
+                { l++; e += $5; if ($6 > 0) pd++; else dor++; a = $6 - $7; if (a > 0) act += a; if ($5 - a <= u) al++ }
+                END {
+                    printf "Libros en el catálogo: %d (ejemplares en total: %d)\n", l, e
+                    printf "Movimientos: %d PRESTAMO | %d DEVOLUCION | %d RESERVA\n", tp, td, tr
+                    printf "Ejemplares actualmente prestados: %d\n", act
+                    printf "Libros prestados alguna vez: %d | dormidos: %d\n", pd, dor
+                    printf "Libros en alerta (%d o menos disponibles): %d\n", u, al
+                    if (hu > 0) printf "AVISO: %d movimientos son de libros que no están en el catálogo\n", hu
+                }'
+            ;;
+
+        *)
+            echo "Modo no válido: $modo"
+            uso
+            exit 1
+            ;;
+    esac
+}
+
+menu() {
+    CATALOGO="$CATALOGO_DEF"
+    MOVIMIENTOS="$MOVIMIENTOS_DEF"
+    while true; do
+        clear
+        echo "=========================================="
+        echo "   MENÚ INTERACTIVO - ANALIZADOR BIBLIOTECA"
+        echo "=========================================="
+        echo "1. Ver Stock y Reposición"
+        echo "2. Ver Libros Dormidos (nunca prestados)"
+        echo "3. Ver Ranking de Libros más prestados"
+        echo "4. Generar Alertas (guardar en log)"
+        echo "5. Ver Resumen general"
+        echo "6. Salir"
+        echo "------------------------------------------"
+        read -r -p "Elige una opción [1-6]: " opcion
+        case "$opcion" in
+            1) echo ""; ejecutar_modo stock ;;
+            2) echo ""; ejecutar_modo dormidos ;;
+            3) echo ""; ejecutar_modo ranking ;;
+            4) echo ""; ejecutar_modo alertas ;;
+            5) echo ""; ejecutar_modo resumen ;;
+            6) echo "¡Saliendo del analizador. ¡Hasta luego!"; exit 0 ;;
+            *) echo "Opción inválida. Intenta de nuevo."; sleep 1; continue ;;
+        esac
+        echo ""
+        read -r -p "Presiona ENTER para continuar..."
+    done
+}
+
+case "${1:-}" in
+    -h|--help) uso ;;
+    "") menu ;;
+    *)
+        CATALOGO="${2:-$CATALOGO_DEF}"
+        MOVIMIENTOS="${3:-$MOVIMIENTOS_DEF}"
+        ejecutar_modo "$1"
+        ;;
+esac

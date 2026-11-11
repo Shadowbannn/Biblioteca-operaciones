@@ -1,0 +1,72 @@
+$ ./scripts/chequeo.sh
+Chequeo de BiblioTech - 2026-11-10 23:25:29
+Proyecto: /home/thony/Biblioteca
+
+== 1. Estructura, permisos y secretos ==
+[OK]     Biblioteca/ (2750, grupo biblioteca-dev)
+[OK]     codigo (2750, grupo biblioteca-dev)
+[OK]     docs (2750, grupo biblioteca-dev)
+[OK]     scripts (2750, grupo biblioteca-dev)
+[OK]     datos (2750, grupo biblioteca-dev)
+[OK]     logs (2750, grupo biblioteca-dev)
+[OK]     respaldos (2770, grupo biblioteca-bd)
+[OK]     scripts/analizador.sh (750, grupo biblioteca-dev)
+[OK]     scripts/casos_error.sh (750, grupo biblioteca-dev)
+[OK]     scripts/chequeo.sh (750, grupo biblioteca-dev)
+[OK]     scripts/desplegar.sh (750, grupo biblioteca-dev)
+[OK]     scripts/evidencias.sh (750, grupo biblioteca-dev)
+[OK]     scripts/exportar_datos.sh (750, grupo biblioteca-dev)
+[OK]     scripts/preparar_log_app.sh (750, grupo biblioteca-dev)
+[OK]     scripts/probar_restauracion.sh (750, grupo biblioteca-dev)
+[OK]     scripts/respaldo.sh (750, grupo biblioteca-dev)
+[OK]     scripts/respaldo_docker.sh (750, grupo biblioteca-dev)
+[OK]     scripts/restaurar_docker.sh (750, grupo biblioteca-dev)
+[OK]     .env (600): sin acceso para otros usuarios
+[OK]     docker-compose.yml y Dockerfile sin contraseñas escritas
+
+== 2. Docker y contenedores ==
+[OK]     Docker activo
+[OK]     Contenedor db en ejecución
+[OK]     Contenedor app en ejecución
+[OK]     Base de datos saludable (healthcheck)
+[OK]     Volumen bibliotech_db_data existe
+[OK]     Volumen bibliotech_uploads existe
+[OK]     Volumen bibliotech_movimientos existe
+
+== 3. Aplicación web ==
+[OK]     http://localhost:8080/carpeta2/inicioo.php -> 200
+[OK]     Catálogo responde 200 y lee la base de datos
+[OK]     uploads/ existe y Apache puede escribir
+[OK]     Registro de movimientos: Apache puede escribir
+[OK]     Registro de movimientos: formato válido (líneas: 2)
+[OK]     Página de alertas responde 200 y se actualizó hace 20 min
+
+== 4. Base de datos ==
+[OK]     Tabla libros: 10222 filas
+[OK]     Tabla socios: 5 filas
+[OK]     Tabla usuarios: 5 filas
+[OK]     Tabla prestamos: 12 filas
+[OK]     Tabla juegos: 82 filas
+[OK]     Tabla proyectos: 159 filas
+
+== 5. Respaldos ==
+[OK]     Respaldos disponibles: 6; el último es respaldo-docker_2026-11-10_23-24-19.tar.gz
+[OK]     Antigüedad del último respaldo: 0 h (máximo 26 h)
+[OK]     El sha256 del último respaldo coincide
+[OK]     El último respaldo se puede leer y contiene base de datos, uploads y manifiesto
+[OK]     El último respaldo no contiene contraseñas (.env)
+[OK]     Última prueba de restauración exitosa: 2026-11-10 23:16:58 (antigüedad: 0 d)
+
+== 6. Tareas programadas y servicios ==
+[OK]     Servicio cron activo
+[OK]     Servicio SSH activo
+[OK]     cron: respaldo_docker.sh programado
+[OK]     cron: analizador.sh alertas programado
+[OK]     cron: prueba de restauración programada
+[OK]     cron: chequeo.sh programado
+
+== 7. Disco ==
+[OK]     Uso del disco: 1% (máximo 90%)
+
+Resumen: 52 correctos, 0 avisos, 0 errores
+[código de salida: 0]

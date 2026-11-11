@@ -1,0 +1,5 @@
+--- GENERANDO ALERTAS ---
+Proceso finalizado (umbral de stock: 1).
+  Stock: 12 | Dormidos: 20 (de 10214) | Ranking: 8
+  Registro: /home/thony/Biblioteca/logs/alertas.log
+  Página para la bibliotecóloga: /carpeta2/alertas/alertas.html

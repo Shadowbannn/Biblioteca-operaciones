@@ -1,0 +1,27 @@
+Modo no válido: inventado
+analizador.sh - Analizador de la biblioteca (versión 3: lee la base de datos real)
+
+Uso:
+  analizador.sh              menú interactivo
+  analizador.sh MODO
+
+MODO:
+  stock      libros con pocos ejemplares disponibles (alerta de reposición)
+  dormidos   libros que nunca se prestaron
+  ranking    los libros más prestados
+  alertas    todo lo anterior: escribe logs/alertas.log y publica la página
+             /carpeta2/alertas/alertas.html para la bibliotecóloga
+  resumen    totales generales
+
+Cómo cuenta (tabla prestamos de la base de datos biblioteca2):
+  disponibles     = ejemplares (libros.stock) - préstamos con estado 'Prestado'
+  "se prestó"     = tiene un préstamo 'Prestado' o 'Devuelto' (reservas y cancelados no cuentan)
+  alerta de stock = disponibles <= UMBRAL_STOCK y el libro tuvo algún préstamo o reserva
+Las consultas se hacen dentro del contenedor "db" con el usuario de la aplicación,
+usando las variables del propio contenedor: ninguna contraseña pasa por este script.
+
+Variables opcionales:
+  UMBRAL_STOCK  se alerta si quedan este número de ejemplares o menos (por defecto 1)
+  LIMITE        filas de dormidos y ranking a mostrar o alertar (por defecto 20; 0 = todas)
+
+Salida: 0 si todo salió bien, 1 si hubo un error (queda en logs/errores.log)

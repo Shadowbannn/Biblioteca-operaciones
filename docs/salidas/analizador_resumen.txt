@@ -1,0 +1,5 @@
+--- RESUMEN GENERAL ---
+Libros en el catálogo: 10222 (ejemplares en total: 10222)
+Préstamos: 5 prestados ahora | 4 reservados | 3 devueltos
+Libros que nunca se prestaron: 10214
+Libros en alerta (1 o menos disponibles): 12 (sin ejemplares: 5)

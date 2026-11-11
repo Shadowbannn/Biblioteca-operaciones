@@ -1,0 +1,3 @@
+$ ./scripts/respaldo_docker.sh
+ERROR: El servicio 'db' no está en ejecución (iniciar con: docker compose up -d)
+[código de salida: 1]

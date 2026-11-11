@@ -1,0 +1,4 @@
+$ ./scripts/respaldo_docker.sh
+Inicio del respaldo respaldo-docker_2026-11-10_23-16-33.tar.gz
+ÉXITO: Respaldo creado (respaldo-docker_2026-11-10_23-16-33.tar.gz, 42M, sha256 296d4b4f0077...)
+[código de salida: 0]

@@ -1,0 +1,1 @@
+ERROR: UMBRAL_STOCK debe ser un número entero (recibido: abc)

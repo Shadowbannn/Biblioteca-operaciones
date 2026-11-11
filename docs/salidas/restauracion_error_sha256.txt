@@ -1,0 +1,3 @@
+$ ./scripts/restaurar_docker.sh --probar respaldos/respaldo-docker_PRUEBA.tar.gz
+ERROR: La suma SHA-256 no coincide: el respaldo está dañado o fue modificado
+[código de salida: 1]

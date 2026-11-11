@@ -1,0 +1,3 @@
+$ ./scripts/restaurar_docker.sh --probar respaldos/no_existe.tar.gz
+ERROR: No hay un respaldo para restaurar (respaldos/no_existe.tar.gz)
+[código de salida: 1]

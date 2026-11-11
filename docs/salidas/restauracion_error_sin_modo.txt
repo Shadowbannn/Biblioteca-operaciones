@@ -1,0 +1,17 @@
+$ ./scripts/restaurar_docker.sh
+restaurar_docker.sh - Restauración de BiblioTech desde un respaldo (versión 3)
+
+Uso:
+  ./scripts/restaurar_docker.sh --probar [respaldo.tar.gz]
+      Prueba de restauración COMPLETA en un entorno aislado y descartable: otro
+      proyecto de Docker (bibliotech_prueba), otro puerto (8081), volúmenes vacíos
+      y contraseñas nuevas. Restaura el respaldo, lo compara con su MANIFIESTO.txt,
+      prueba la web y elimina todo al terminar. No toca el sistema en funcionamiento.
+      Sin archivo indicado usa el último respaldo.
+  ./scripts/restaurar_docker.sh --produccion respaldo.tar.gz
+      Restaura sobre el sistema en funcionamiento: pide confirmación, hace antes un
+      respaldo de seguridad, reemplaza base de datos, fotos y registro de movimientos
+      y verifica el resultado.
+
+Salida: 0 si lo restaurado coincide con el respaldo, 1 si hubo un error o diferencias.
+[código de salida: 1]

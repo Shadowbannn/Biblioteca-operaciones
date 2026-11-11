@@ -1,0 +1,27 @@
+$ ./scripts/restaurar_docker.sh --produccion respaldos/respaldo-docker_2026-11-10_23-21-49.tar.gz
+
+ATENCIÓN: se van a REEMPLAZAR la base de datos, las fotos y el registro de movimientos
+del sistema en funcionamiento por el contenido de respaldo-docker_2026-11-10_23-21-49.tar.gz
+(respaldo del 2026-11-10 23:21:51).
+Respaldo de seguridad previo a la restauración
+Inicio del respaldo respaldo-docker_2026-11-10_23-24-19.tar.gz
+ÉXITO: Respaldo creado (respaldo-docker_2026-11-10_23-24-19.tar.gz, 42M, sha256 bbfc10aa0aa7...)
+RESTAURACIÓN EN PRODUCCIÓN de respaldo-docker_2026-11-10_23-21-49.tar.gz
+Restaurando la base de datos biblioteca2...
+Restaurando fotos y portadas...
+Restaurando el registro de movimientos...
+
+Verificación (respaldo vs. restaurado):
+  tabla libros               respaldo=10222    restaurado=10222    [OK]
+  tabla socios               respaldo=5        restaurado=5        [OK]
+  tabla usuarios             respaldo=5        restaurado=5        [OK]
+  tabla prestamos            respaldo=12       restaurado=12       [OK]
+  tabla juegos               respaldo=82       restaurado=82       [OK]
+  tabla proyectos            respaldo=159      restaurado=159      [OK]
+  archivos de uploads        respaldo=558      restaurado=558      [OK]
+  líneas de movimientos     respaldo=2        restaurado=2        [OK]
+  web: inicioo.php (HTTP)    respaldo=200      restaurado=200      [OK]
+  web: catálogo (lee la BD) respaldo=HTTP 200 ok restaurado=HTTP 200 ok [OK]
+
+ÉXITO: restauración verificada (--produccion, respaldo-docker_2026-11-10_23-21-49.tar.gz, 20 s)
+[código de salida: 0]

@@ -1,0 +1,1 @@
+ERROR: El servicio db no está en ejecución (iniciar con: docker compose up -d)

@@ -1,0 +1,132 @@
+CASOS DE ERROR - BiblioTech (Quantum Dev)
+Generado: 2026-11-08 13:11:54  (ejecutado sobre una copia temporal; no se tocaron datos reales)
+
+=================== analizador.sh ===================
+
+--- Modo inexistente
+$ ./scripts/analizador.sh inventado datos/ok.csv datos/ok.csv
+Modo no válido: inventado
+analizador.sh - Analizador de la biblioteca (versión 2)
+
+Uso:
+  analizador.sh                              menú interactivo
+  analizador.sh MODO [catalogo] [movimientos]
+
+MODO:  stock | dormidos | ranking | alertas | resumen
+  stock      libros con pocos ejemplares disponibles (alerta de reposición)
+  dormidos   libros del catálogo que nunca se prestaron
+  ranking    los más prestados
+  alertas    todo lo anterior en formato alerta, registrado en logs/alertas.log
+  resumen    totales generales
+Sin archivos indicados lee datos/catalogo.csv y datos/movimientos.log,
+que publica exportar_datos.sh (catálogo desde la base de datos y movimientos
+desde el registro que escribe la aplicación).
+
+Variables opcionales:
+  UMBRAL_STOCK  se alerta si quedan este número de ejemplares o menos (por defecto 1: con 0 o 1 disponible)
+  LIMITE        cantidad de filas de dormidos y ranking a mostrar o alertar (por defecto 20; 0 = todas)
+[código de salida: 1]
+
+--- Catálogo inexistente
+$ ./scripts/analizador.sh stock /no/existe.csv
+ERROR: catálogo /no/existe.csv no existe
+[código de salida: 1]
+
+--- Catálogo vacío
+$ ./scripts/analizador.sh stock datos/vacio.csv
+ERROR: el catálogo datos/vacio.csv está vacío
+[código de salida: 1]
+
+--- Catálogo con cabecera incorrecta
+$ ./scripts/analizador.sh stock datos/malo.csv
+ERROR: el catálogo datos/malo.csv no tiene la cabecera 'id;titulo;autor;categoria;ejemplares'
+[código de salida: 1]
+
+--- Archivo de movimientos inexistente
+$ ./scripts/analizador.sh stock datos/ok.csv /no/existe.log
+ERROR: movimientos /no/existe.log no existe
+[código de salida: 1]
+
+--- Umbral de stock no numérico
+$ env UMBRAL_STOCK=abc ./scripts/analizador.sh stock datos/ok.csv datos/ok.csv
+ERROR: UMBRAL_STOCK debe ser un número entero (recibido: abc)
+[código de salida: 1]
+
+--- Registro de errores (logs/errores.log)
+FECHA HORA - ERROR: catálogo /no/existe.csv no existe
+FECHA HORA - ERROR: el catálogo datos/vacio.csv está vacío
+FECHA HORA - ERROR: el catálogo datos/malo.csv no tiene la cabecera 'id;titulo;autor;categoria;ejemplares'
+FECHA HORA - ERROR: movimientos /no/existe.log no existe
+FECHA HORA - ERROR: UMBRAL_STOCK debe ser un número entero (recibido: abc)
+
+=================== exportar_datos.sh ===================
+
+--- Falta el archivo de credenciales .respaldo.cnf
+$ ./scripts/exportar_datos.sh
+ERROR: No se puede leer /tmp/prueba/.respaldo.cnf
+[código de salida: 1]
+
+--- Credenciales de base de datos inválidas
+$ ./scripts/exportar_datos.sh
+ERROR 1045 (28000): Access denied for user 'usuario_inexistente'@'localhost' (using password: YES)
+ERROR: No se pudo leer la tabla libros
+[código de salida: 1]
+
+=================== respaldo.sh ===================
+
+--- No existe la carpeta de respaldos
+$ ./scripts/respaldo.sh
+ERROR: No existe la carpeta /tmp/prueba/respaldos
+[código de salida: 1]
+
+--- Falta el archivo de credenciales .respaldo.cnf
+$ ./scripts/respaldo.sh
+ERROR: No se puede leer /tmp/prueba/.respaldo.cnf (credenciales del usuario de respaldo)
+[código de salida: 1]
+
+=================== chequeo.sh ===================
+
+--- Estructura incompleta y datos con formato inválido (se muestran solo avisos y errores)
+$ ./scripts/chequeo.sh | grep -E '\[(AVISO|ERROR)\]|Resumen'
+[ERROR]  Biblioteca/ tiene 700/thony y se esperaba 2750/biblioteca-dev
+[ERROR]  Falta codigo
+[ERROR]  Falta docs
+[ERROR]  scripts tiene 750/thony y se esperaba 2750/biblioteca-dev
+[ERROR]  datos tiene 750/thony y se esperaba 2750/biblioteca-dev
+[ERROR]  logs tiene 750/thony y se esperaba 2750/biblioteca-dev
+[ERROR]  respaldos tiene 750/thony y se esperaba 2770/biblioteca-bd
+[ERROR]  scripts/analizador.sh tiene 750/thony y se esperaba 750/biblioteca-dev
+[ERROR]  scripts/chequeo.sh tiene 750/thony y se esperaba 750/biblioteca-dev
+[ERROR]  scripts/desplegar.sh tiene 750/thony y se esperaba 750/biblioteca-dev
+[ERROR]  scripts/exportar_datos.sh tiene 750/thony y se esperaba 750/biblioteca-dev
+[ERROR]  scripts/respaldo.sh tiene 750/thony y se esperaba 750/biblioteca-dev
+[ERROR]  datos/catalogo.csv tiene 640/thony y se esperaba 640/biblioteca-dev
+[ERROR]  catalogo.csv: la cabecera no es 'id;titulo;autor;categoria;ejemplares'
+[ERROR]  catalogo.csv: 1 filas con id vacío o ejemplares no numérico
+[ERROR]  datos/movimientos.log tiene 640/thony y se esperaba 640/biblioteca-dev
+[ERROR]  movimientos.log: 1 líneas con formato inválido (de 2)
+[ERROR]  No se puede leer /tmp/prueba/.respaldo.cnf
+[ERROR]  No hay ningún respaldo en respaldos/
+Resumen: 10 correctos, 0 avisos, 19 errores
+[código de salida: 1]
+
+=================== desplegar.sh ===================
+
+--- Argumento no válido
+$ ./scripts/desplegar.sh --x
+Uso: ./scripts/desplegar.sh [--git]
+[código de salida: 1]
+
+--- No existe el código fuente (codigo/index.php)
+$ ./scripts/desplegar.sh
+2026-11-08 13:11:54 === Inicio del despliegue (usuario: thony) ===
+2026-11-08 13:11:54 ERROR: No se encontró /tmp/prueba/codigo/index.php
+[código de salida: 1]
+
+--- Ejecución como root (no permitida)
+$ sudo ./scripts/desplegar.sh
+2026-11-08 13:11:54 === Inicio del despliegue (usuario: root) ===
+2026-11-08 13:11:54 ERROR: No ejecutar como root: usar un usuario normal con sudo.
+[código de salida: 1]
+
+FIN DE LOS CASOS DE ERROR

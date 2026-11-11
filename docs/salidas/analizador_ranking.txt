@@ -1,0 +1,9 @@
+--- MODO RANKING TOP 20 MÁS PRESTADOS ---
+  1 préstamo -> Libro: L01145 (¿Qué es el hombre?)
+  1 préstamo -> Libro: L02312 (Vidas Paralelas)
+  1 préstamo -> Libro: L02779 (¿Por qué cantan las ballenas?)
+  1 préstamo -> Libro: L04216 (Sweet peppers SRL  SEXSHOP)
+  1 préstamo -> Libro: L09785 (¿Y si quedamos como amigos?)
+  1 préstamo -> Libro: L09809 (¿Quién corre conmigo?)
+  1 préstamo -> Libro: L09995 (Zac y Mia)
+  1 préstamo -> Libro: L10190 (Yo, tú y un quizás)

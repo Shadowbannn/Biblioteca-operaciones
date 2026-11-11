@@ -1,0 +1,261 @@
+EVIDENCIAS - BiblioTech (Quantum Dev)
+Generado: 2026-11-08 14:25:00 en Thony
+
+================ OBJ 1 - Usuarios y grupos ================
+uid=1000(thony) gid=1000(thony) groups=1000(thony),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),100(users),1001(biblioteca-dev)
+uid=1001(walter) gid=1003(walter) groups=1003(walter),1001(biblioteca-dev),1002(biblioteca-bd)
+uid=1002(jose) gid=1004(jose) groups=1004(jose),1001(biblioteca-dev)
+biblioteca-dev:x:1001:thony,walter,jose
+biblioteca-bd:x:1002:walter
+Miembros de sudo: thony
+
+================ OBJ 2 - Permisos de archivos y carpetas ================
+drwxr-s--- thony:biblioteca-dev /home/thony/Biblioteca
+-rw-r----- thony:biblioteca-dev /home/thony/Biblioteca/README.md
+drwxr-s--- thony:biblioteca-dev /home/thony/Biblioteca/codigo
+drwxr-s--- thony:biblioteca-dev /home/thony/Biblioteca/datos
+drwxr-s--- thony:biblioteca-dev /home/thony/Biblioteca/docs
+drwxr-s--- thony:biblioteca-dev /home/thony/Biblioteca/logs
+drwxrws--- thony:biblioteca-bd /home/thony/Biblioteca/respaldos
+drwxr-s--- thony:biblioteca-dev /home/thony/Biblioteca/scripts
+-rwxr-x--- thony:biblioteca-dev /home/thony/Biblioteca/scripts/analizador.sh
+-rwxr-x--- thony:biblioteca-dev /home/thony/Biblioteca/scripts/casos_error.sh
+-rwxr-x--- thony:biblioteca-dev /home/thony/Biblioteca/scripts/chequeo.sh
+-rwxr-x--- thony:biblioteca-dev /home/thony/Biblioteca/scripts/desplegar.sh
+-rwxr-x--- thony:biblioteca-dev /home/thony/Biblioteca/scripts/evidencias.sh
+-rwxr-x--- thony:biblioteca-dev /home/thony/Biblioteca/scripts/exportar_datos.sh
+-rwxr-x--- thony:biblioteca-dev /home/thony/Biblioteca/scripts/preparar_log_app.sh
+-rwxr-x--- thony:biblioteca-dev /home/thony/Biblioteca/scripts/probar_restauracion.sh
+-rwxr-x--- thony:biblioteca-dev /home/thony/Biblioteca/scripts/respaldo.sh
+-rw-r----- thony:biblioteca-dev /home/thony/Biblioteca/datos/catalogo.csv
+-rw-r----- thony:biblioteca-dev /home/thony/Biblioteca/datos/movimientos.log
+-rw-r----- thony:biblioteca-bd /home/thony/Biblioteca/respaldos/respaldo_2026-11-07_21-28-31.tar.gz
+-rw-r----- thony:biblioteca-bd /home/thony/Biblioteca/respaldos/respaldo_2026-11-08_02-00-01.tar.gz
+drwxr-s--- thony:www-data /var/www/biblioteca
+drwxrwxr-x www-data:www-data /var/www/biblioteca/uploads
+drwxr-x--- root:www-data /etc/biblioteca
+-rw-r----- root:www-data /etc/biblioteca/db.conf
+drwxr-s--- www-data:biblioteca-dev /var/log/biblioteca
+-rw-r----- www-data:biblioteca-dev /var/log/biblioteca/movimientos.log
+user::rwx
+group::r-x
+group:biblioteca-dev:--x
+
+================ OBJ 3 - SSH ================
+sshd -t: configuración válida
+active
+port 22
+logingracetime 30
+maxauthtries 3
+permitrootlogin no
+x11forwarding no
+permitemptypasswords no
+allowgroups biblioteca-dev
+--- journalctl -u ssh (rechazos y fallos) ---
+Nov 07 21:19:02 Thony sshd-session[26096]: Failed password for walter from 127.0.0.1 port 49358 ssh2
+Nov 07 21:19:07 Thony sshd-session[26096]: Failed password for walter from 127.0.0.1 port 49358 ssh2
+Nov 08 03:49:41 Thony sshd-session[30987]: Failed password for root from 127.0.0.1 port 35572 ssh2
+Nov 08 03:49:45 Thony sshd-session[30987]: Failed password for root from 127.0.0.1 port 35572 ssh2
+Nov 08 03:49:49 Thony sshd-session[30987]: Failed password for root from 127.0.0.1 port 35572 ssh2
+
+================ OBJ 4 - Apache y servicios al arranque ================
+Syntax OK
+apache2      activo: active    al arranque: enabled
+mariadb      activo: active    al arranque: enabled
+cron         activo: active    al arranque: enabled
+ssh.socket   activo: active    al arranque: enabled
+inicioo.php                    -> HTTP 200
+index.php?accion=listarCatalogo -> HTTP 200
+uploads/ (sin listado)         -> HTTP 403
+
+================ OBJ 5 - Despliegue (desplegar.log) ================
+2026-11-07 21:23:40 === Inicio del despliegue (usuario: thony) ===
+2026-11-07 21:23:40 Sin Git: se publica lo que hay en /home/thony/Biblioteca/codigo
+2026-11-07 21:23:40 Copiando el código a /var/www/biblioteca (sin .git, BD ni uploads)...
+2026-11-07 21:23:40 Ajustando grupo y permisos...
+2026-11-07 21:23:40 Comprobando y recargando Apache...
+Syntax OK
+2026-11-07 21:23:42 Prueba http://localhost/carpeta2/inicioo.php -> 200
+2026-11-07 21:23:42 Prueba http://localhost/carpeta2/index.php?accion=listarCatalogo -> 200
+2026-11-07 21:23:42 === Despliegue finalizado con éxito ===
+2026-11-08 04:18:38 === Inicio del despliegue (usuario: thony) ===
+2026-11-08 04:18:38 Sin Git: se publica lo que hay en /home/thony/Biblioteca/codigo
+2026-11-08 04:18:38 Copiando el código a /var/www/biblioteca (sin .git, BD ni uploads)...
+2026-11-08 04:18:38 Ajustando grupo y permisos...
+2026-11-08 04:18:38 Comprobando y recargando Apache...
+Syntax OK
+2026-11-08 04:18:40 Prueba http://localhost/carpeta2/inicioo.php -> 200
+2026-11-08 04:18:40 Prueba http://localhost/carpeta2/index.php?accion=listarCatalogo -> 200
+2026-11-08 04:18:40 === Despliegue finalizado con éxito ===
+2026-11-08 13:45:50 === Inicio del despliegue (usuario: thony) ===
+2026-11-08 13:45:50 Sin Git: se publica lo que hay en /home/thony/Biblioteca/codigo
+2026-11-08 13:45:50 Copiando el código a /var/www/biblioteca (sin .git, BD ni uploads)...
+2026-11-08 13:45:50 Ajustando grupo y permisos...
+2026-11-08 13:45:50 Comprobando y recargando Apache...
+Syntax OK
+2026-11-08 13:45:52 Prueba http://localhost/carpeta2/inicioo.php -> 200
+2026-11-08 13:45:52 Prueba http://localhost/carpeta2/index.php?accion=listarCatalogo -> 200
+2026-11-08 13:45:52 === Despliegue finalizado con éxito ===
+
+================ OBJ 6 - Respaldo ================
+2026-11-07 21:28:31 - Inicio del respaldo respaldo_2026-11-07_21-28-31.tar.gz
+2026-11-07 21:28:34 - ÉXITO: Respaldo creado (respaldo_2026-11-07_21-28-31.tar.gz, 42M, sha256 6dc241a30f41...)
+2026-11-08 02:00:01 - Inicio del respaldo respaldo_2026-11-08_02-00-01.tar.gz
+2026-11-08 02:00:11 - ÉXITO: Respaldo creado (respaldo_2026-11-08_02-00-01.tar.gz, 43M, sha256 9a34ca6b1601...)
+total 84M
+-rw-r----- 1 thony biblioteca-bd 42M Nov  7 21:28 respaldo_2026-11-07_21-28-31.tar.gz
+-rw-r----- 1 thony biblioteca-bd 102 Nov  7 21:28 respaldo_2026-11-07_21-28-31.tar.gz.sha256
+-rw-r----- 1 thony biblioteca-bd 43M Nov  8 02:00 respaldo_2026-11-08_02-00-01.tar.gz
+-rw-r----- 1 thony biblioteca-bd 102 Nov  8 02:00 respaldo_2026-11-08_02-00-01.tar.gz.sha256
+respaldo_2026-11-08_02-00-01.tar.gz: OK
+
+================ OBJ 7 - Chequeo (ejecución en vivo) ================
+Chequeo de BiblioTech - 2026-11-08 14:25:00
+Proyecto: /home/thony/Biblioteca
+
+== 1. Estructura y permisos ==
+[OK]     Biblioteca/ (2750, grupo biblioteca-dev)
+[OK]     codigo (2750, grupo biblioteca-dev)
+[OK]     docs (2750, grupo biblioteca-dev)
+[OK]     scripts (2750, grupo biblioteca-dev)
+[OK]     datos (2750, grupo biblioteca-dev)
+[OK]     logs (2750, grupo biblioteca-dev)
+[OK]     respaldos (2770, grupo biblioteca-bd)
+[OK]     scripts/analizador.sh (750, grupo biblioteca-dev)
+[OK]     scripts/casos_error.sh (750, grupo biblioteca-dev)
+[OK]     scripts/chequeo.sh (750, grupo biblioteca-dev)
+[OK]     scripts/desplegar.sh (750, grupo biblioteca-dev)
+[OK]     scripts/evidencias.sh (750, grupo biblioteca-dev)
+[OK]     scripts/exportar_datos.sh (750, grupo biblioteca-dev)
+[OK]     scripts/preparar_log_app.sh (750, grupo biblioteca-dev)
+[OK]     scripts/probar_restauracion.sh (750, grupo biblioteca-dev)
+[OK]     scripts/respaldo.sh (750, grupo biblioteca-dev)
+
+== 2. Datos ==
+[OK]     datos/catalogo.csv (640, grupo biblioteca-dev)
+[OK]     catalogo.csv: cabecera correcta
+[OK]     catalogo.csv: 10222 libros
+[OK]     catalogo.csv: sin ids repetidos
+[OK]     catalogo.csv: ejemplares numéricos
+[OK]     datos/movimientos.log (640, grupo biblioteca-dev)
+[OK]     movimientos.log: 11 movimientos con formato válido
+[OK]     movimientos.log: todos los libros existen en el catálogo
+
+== 3. Servicios ==
+[OK]     Servicio apache2 activo
+[OK]     Servicio mariadb activo
+[OK]     Servicio SSH activo
+
+== 4. Aplicación web ==
+[OK]     http://localhost/carpeta2/inicioo.php -> 200
+[OK]     http://localhost/carpeta2/index.php?accion=listarCatalogo -> 200
+[OK]     uploads/ existe y Apache puede escribir
+
+== 5. Base de datos ==
+[OK]     Tabla libros: 10222 filas
+[OK]     Tabla socios: 5 filas
+[OK]     Tabla prestamos: 10 filas
+[OK]     Tabla usuarios: 5 filas
+
+== 6. Respaldos ==
+[OK]     Hay 2 respaldos; el último es respaldo_2026-11-08_02-00-01.tar.gz
+[OK]     El último respaldo tiene 12 h (máximo 26 h)
+[OK]     El sha256 del último respaldo coincide
+
+== 7. Disco ==
+[OK]     Uso del disco: 1% (máximo 90%)
+
+Resumen: 38 correctos, 0 avisos, 0 errores
+
+================ OBJ 8 y 9 - Registro que escribe la aplicación y analizador ================
+--- registro de la aplicación (/var/log/biblioteca/movimientos.log) ---
+-rw-r----- 1 www-data biblioteca-dev 718 Nov  8 14:20 /var/log/biblioteca/movimientos.log
+13 /var/log/biblioteca/movimientos.log
+2026-10-25 00:00:00 PRESTAMO libro=L09995 usuario=A022
+2026-10-29 00:00:00 DEVOLUCION libro=L02779 usuario=A026
+2026-11-08 04:21:17 PRESTAMO libro=L04216 usuario=A011
+2026-11-08 04:24:16 DEVOLUCION libro=L04216 usuario=A011
+2026-11-08 14:20:16 PRESTAMO libro=L10190 usuario=A011
+2026-11-08 14:20:34 DEVOLUCION libro=L10190 usuario=A011
+--- datos/catalogo.csv (primeras líneas) ---
+id;titulo;autor;categoria;ejemplares
+L00001;Atlas Compacto Peters ej. 1;Vicens Vives;Follet y Proy;1
+L00002;Almanaque 2008 BSE;BSE;Follet y Proy;1
+L00003;Anuario 2003;Facultad de Ciencias;Follet y Proy;1
+--- datos/movimientos.log (copia para el analizador) ---
+2026-10-16 23:15:56 RESERVA libro=L09967 usuario=A011
+2026-10-20 21:50:01 RESERVA libro=L08522 usuario=A011
+2026-10-21 22:17:22 RESERVA libro=L09883 usuario=A026
+2026-10-22 00:00:00 PRESTAMO libro=L09785 usuario=A022
+2026-10-22 00:00:00 PRESTAMO libro=L09809 usuario=A025
+2026-10-22 00:00:00 PRESTAMO libro=L01145 usuario=A024
+2026-10-22 00:00:00 PRESTAMO libro=L02779 usuario=A026
+2026-10-25 00:00:00 PRESTAMO libro=L09995 usuario=A022
+2026-10-29 00:00:00 DEVOLUCION libro=L02779 usuario=A026
+2026-11-08 04:21:17 PRESTAMO libro=L04216 usuario=A011
+2026-11-08 04:24:16 DEVOLUCION libro=L04216 usuario=A011
+--- analizador resumen ---
+--- RESUMEN GENERAL ---
+Libros en el catálogo: 10222 (ejemplares en total: 10222)
+Movimientos: 6 PRESTAMO | 2 DEVOLUCION | 3 RESERVA
+Ejemplares actualmente prestados: 4
+Libros prestados alguna vez: 6 | dormidos: 10216
+Libros en alerta (1 o menos disponibles): 10222
+--- analizador ranking ---
+--- MODO RANKING TOP 5 MÁS PRESTADOS ---
+  1 préstamos -> Libro: L01145 (¿Qué es el hombre?)
+  1 préstamos -> Libro: L02779 (¿Por qué cantan las ballenas?)
+  1 préstamos -> Libro: L04216 (Sweet peppers SRL  SEXSHOP)
+  1 préstamos -> Libro: L09785 (¿Y si quedamos como amigos?)
+  1 préstamos -> Libro: L09809 (¿Quién corre conmigo?)
+--- analizador alertas ---
+--- GENERANDO ALERTAS EN alertas.log ---
+Proceso finalizado (umbral de stock: 1). Revisa: /home/thony/Biblioteca/logs/alertas.log
+  Stock: 10222 | Dormidos: 20 (de 10216) | Ranking: 6
+--- logs/alertas.log (ejemplos de cada tipo) ---
+10249 /home/thony/Biblioteca/logs/alertas.log
+2026-11-08 14:25:01 - ALERTA STOCK: Libro L00001 (Atlas Compacto Peters ej. 1) stock disponible: 1
+2026-11-08 14:25:01 - ALERTA STOCK: Libro L00002 (Almanaque 2008 BSE) stock disponible: 1
+2026-11-08 14:25:01 - ALERTA STOCK: Libro L00003 (Anuario 2003) stock disponible: 1
+2026-11-08 14:25:01 - ALERTA DORMIDO: Libro L00001 (Atlas Compacto Peters ej. 1) nunca se prestó
+2026-11-08 14:25:01 - ALERTA DORMIDO: Libro L00002 (Almanaque 2008 BSE) nunca se prestó
+2026-11-08 14:25:01 - ALERTA DORMIDO: Libro L00003 (Anuario 2003) nunca se prestó
+2026-11-08 14:25:01 - INFO DORMIDOS: se listan 20 de 10216 libros que nunca se prestaron
+2026-11-08 14:25:01 - ALERTA RANKING: Libro L01145 (¿Qué es el hombre?) entre los más prestados: 1 préstamos (considerar comprar más ejemplares)
+2026-11-08 14:25:01 - ALERTA RANKING: Libro L02779 (¿Por qué cantan las ballenas?) entre los más prestados: 1 préstamos (considerar comprar más ejemplares)
+2026-11-08 14:25:01 - ALERTA RANKING: Libro L04216 (Sweet peppers SRL  SEXSHOP) entre los más prestados: 1 préstamos (considerar comprar más ejemplares)
+
+================ OBJ 10 - Cron ================
+SHELL=/bin/bash
+PATH=/usr/local/bin:/usr/bin:/bin
+MAILTO=""
+*/30   *    *   *   *     umask 027; /home/thony/Biblioteca/scripts/exportar_datos.sh >> /home/thony/Biblioteca/logs/cron.log 2>&1
+5,35   *    *   *   *     umask 027; /home/thony/Biblioteca/scripts/analizador.sh alertas >> /home/thony/Biblioteca/logs/cron.log 2>&1
+0      2    *   *   *     umask 027; /home/thony/Biblioteca/scripts/respaldo.sh >> /home/thony/Biblioteca/logs/cron.log 2>&1
+40     *    *   *   *     umask 027; /home/thony/Biblioteca/scripts/chequeo.sh >> /home/thony/Biblioteca/logs/cron.log 2>&1
+--- ejecuciones registradas por el sistema ---
+Nov 08 03:40:01 Thony CRON[30461]: (thony) CMD (umask 027; /home/thony/Biblioteca/scripts/chequeo.sh >> /home/thony/Biblioteca/logs/cron.log 2>&1)
+Nov 08 04:00:01 Thony CRON[31501]: (thony) CMD (umask 027; /home/thony/Biblioteca/scripts/exportar_datos.sh >> /home/thony/Biblioteca/logs/cron.log 2>&1)
+Nov 08 04:05:01 Thony CRON[31710]: (thony) CMD (umask 027; /home/thony/Biblioteca/scripts/analizador.sh alertas >> /home/thony/Biblioteca/logs/cron.log 2>&1)
+Nov 08 13:30:01 Thony CRON[1659]: (thony) CMD (umask 027; /home/thony/Biblioteca/scripts/exportar_datos.sh >> /home/thony/Biblioteca/logs/cron.log 2>&1)
+Nov 08 13:35:01 Thony CRON[1687]: (thony) CMD (umask 027; /home/thony/Biblioteca/scripts/analizador.sh alertas >> /home/thony/Biblioteca/logs/cron.log 2>&1)
+Nov 08 13:40:01 Thony CRON[1865]: (thony) CMD (umask 027; /home/thony/Biblioteca/scripts/chequeo.sh >> /home/thony/Biblioteca/logs/cron.log 2>&1)
+Nov 08 14:00:01 Thony CRON[2554]: (thony) CMD (umask 027; /home/thony/Biblioteca/scripts/exportar_datos.sh >> /home/thony/Biblioteca/logs/cron.log 2>&1)
+Nov 08 14:05:01 Thony CRON[2581]: (thony) CMD (umask 027; /home/thony/Biblioteca/scripts/analizador.sh alertas >> /home/thony/Biblioteca/logs/cron.log 2>&1)
+--- logs/cron.log (final) ---
+ÉXITO: catalogo.csv con 10222 libros; movimientos.log con 11 movimientos (reservas: 3, préstamos: 6, devoluciones: 2)
+--- GENERANDO ALERTAS EN alertas.log ---
+Proceso finalizado (umbral de stock: 1). Revisa: /home/thony/Biblioteca/logs/alertas.log
+  Stock: 10222 | Dormidos: 20 (de 10216) | Ranking: 6
+
+================ OBJ 11 y 12 - Documentación ================
+-rw-r----- 1 thony biblioteca-dev 8710 Nov  8 13:18 /home/thony/Biblioteca/README.md
+
+/home/thony/Biblioteca/docs:
+total 40
+-rw-r----- 1 thony biblioteca-dev  5541 Nov  8 13:11 casos_error.txt
+-rw-r----- 1 thony biblioteca-dev 12288 Nov  8 14:25 evidencias.txt
+-rw-r----- 1 thony biblioteca-dev 11241 Nov  8 13:18 ficha_tecnica.md
+-rw-r----- 1 thony biblioteca-dev  4368 Nov  8 13:18 respuestas_breves.md
+
+FIN DE EVIDENCIAS
